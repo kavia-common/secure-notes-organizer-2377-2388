@@ -1,48 +1,68 @@
-import React, { useState, useEffect } from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from "react";
+import "./App.css";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import Sidebar from "./components/Sidebar";
+import Topbar from "./components/Topbar";
+import NotesPage from "./pages/NotesPage";
+import AuthPage from "./pages/AuthPage";
+import { getCurrentUser, logout } from "./api";
 
-// PUBLIC_INTERFACE
+export const AuthContext = React.createContext();
+/**
+ * PUBLIC_INTERFACE
+ * The root app with routing, global layout, and auth context.
+ */
 function App() {
-  const [theme, setTheme] = useState('light');
+  const [user, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
 
-  // Effect to apply theme to document element
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-  }, [theme]);
+    // Check logged-in status on startup.
+    (async () => {
+      try {
+        const me = await getCurrentUser();
+        setUser(me);
+      } catch {
+        setUser(null);
+      } finally {
+        setAuthChecked(true);
+      }
+    })();
+  }, []);
 
-  // PUBLIC_INTERFACE
-  const toggleTheme = () => {
-    setTheme(prevTheme => prevTheme === 'light' ? 'dark' : 'light');
-  };
+  function handleLogout() {
+    logout();
+    setUser(null);
+  }
+
+  if (!authChecked) {
+    // App initializing...
+    return (
+      <div className="centered-loader">
+        <div className="loader" />
+      </div>
+    );
+  }
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <button 
-          className="theme-toggle" 
-          onClick={toggleTheme}
-          aria-label={`Switch to ${theme === 'light' ? 'dark' : 'light'} mode`}
-        >
-          {theme === 'light' ? '🌙 Dark' : '☀️ Light'}
-        </button>
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <p>
-          Current theme: <strong>{theme}</strong>
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthContext.Provider value={{ user, setUser, handleLogout }}>
+      <Router>
+        {user && <Sidebar />}
+        <main className={`main-content ${user ? "with-sidebar" : ""}`}>
+          {user && <Topbar />}
+          <Routes>
+            <Route path="/login" element={user ? <Navigate to="/" /> : <AuthPage mode="login" />} />
+            <Route path="/signup" element={user ? <Navigate to="/" /> : <AuthPage mode="signup" />} />
+            <Route
+              path="/*"
+              element={
+                user ? <NotesPage /> : <Navigate to="/login" />
+              }
+            />
+          </Routes>
+        </main>
+      </Router>
+    </AuthContext.Provider>
   );
 }
 

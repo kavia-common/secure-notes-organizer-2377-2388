@@ -1,104 +1,419 @@
-/* CSS Variables for Theme Management */
+/* --------------------
+   THEME VARIABLES
+-------------------- */
 :root {
-  /* Light theme colors */
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --text-primary: #282c34;
-  --text-secondary: #61dafb;
-  --border-color: #e9ecef;
-  --button-bg: #007bff;
-  --button-text: #ffffff;
+  --primary: #1976d2;
+  --secondary: #424242;
+  --accent: #ffb300;
+
+  --bg-primary: #fff;
+  --bg-secondary: #f4f6fb;
+  --text-primary: #23232b;
+  --text-secondary: #757575;
+  --border-color: #e0e0e0;
+
+  --sidebar-width: 220px;
+
+  --modal-bg: #f4f6fb;
 }
 
 [data-theme="dark"] {
-  /* Dark theme colors */
-  --bg-primary: #1a1a1a;
-  --bg-secondary: #282c34;
-  --text-primary: #ffffff;
-  --text-secondary: #61dafb;
-  --border-color: #404040;
-  --button-bg: #0056b3;
-  --button-text: #ffffff;
+  --bg-primary: #23232b;
+  --bg-secondary: #20232a;
+  --text-primary: #fff;
+  --text-secondary: #bbb;
+  --border-color: #2c3039;
+  --modal-bg: #23232b;
 }
 
-.App {
-  text-align: center;
-  background-color: var(--bg-primary);
+/* --------------------
+   BASIC RESETS
+-------------------- */
+body, html, #root, .App {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: var(--bg-primary);
   color: var(--text-primary);
+  font-family: 'Inter', 'Segoe UI', Arial, Helvetica, sans-serif;
+  font-size: 16px;
   min-height: 100vh;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition: background-color 0.3s, color 0.3s;
+}
+a {
+  color: var(--primary);
+  text-decoration: none;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+/* --------------------
+   MAIN LAYOUT
+-------------------- */
+.main-content {
+  margin-left: 0;
+  min-height: 100vh;
+  background: var(--bg-secondary);
+  transition: margin 0.2s;
 }
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+.main-content.with-sidebar {
+  margin-left: var(--sidebar-width);
+}
+@media (max-width: 800px) {
+  .main-content.with-sidebar {
+    margin-left: 0;
   }
 }
 
-.App-header {
-  background-color: var(--bg-secondary);
-  min-height: 100vh;
+/* --------------------
+   SIDEBAR
+-------------------- */
+.sidebar {
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--primary);
+  color: #fff;
+  z-index: 100;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  transition: left 0.2s;
+  box-shadow: 2px 0 8px rgba(39,54,92,0.04);
+}
+.sidebar-header {
+  display: flex;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: var(--text-primary);
-  transition: background-color 0.3s ease;
-  position: relative;
+  justify-content: space-between;
+  padding: 1.2rem;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
 }
-
-.App-link {
-  color: var(--text-secondary);
-  transition: color 0.3s ease;
-}
-
-.theme-toggle {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: var(--button-bg);
-  color: var(--button-text);
+.sidebar-toggle {
+  background: transparent;
   border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
-  font-size: 14px;
+  color: #fff;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+.sidebar-user {
+  padding: 1rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.logout-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  margin-top: 3px;
+}
+
+@media (max-width:800px) {
+  .sidebar {
+    left: -100vw;
+    min-width: 0;
+    max-width: 80vw;
+    width: 180px;
+  }
+  .sidebar.open {
+    left: 0;
+  }
+}
+
+.tag-list {
+  padding: 1rem 1.2rem;
+  flex: 1;
+}
+.tag-list h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.8rem 0;
+  font-weight: 500;
+  color: #fff;
+}
+.tag-btn {
+  background: transparent;
+  border: none;
+  color: #cee8fa;
+  font-size: 1rem;
+  margin-right: 0.2rem;
+  margin-bottom: 3px;
+  cursor: pointer;
+  transition: color 0.2s, background 0.15s;
+  border-radius: 5px;
+  padding: 0.2rem 0.65rem;
+}
+.tag-btn.active {
+  background: #fff2;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* --------------------
+   TOPBAR
+-------------------- */
+.topbar {
+  background: var(--bg-primary);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  padding: 0.5rem 1.2rem;
+  min-height: 54px;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.topbar-search {
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-size: 1.1rem;
+  padding: 5px 11px;
+  width: 220px;
+  outline: none;
+  margin-right: 15px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+.notes-create-btn {
+  background: var(--accent);
+  color: var(--text-primary);
+  border: none;
+  padding: 0.5rem 1.1rem;
+  font-size: 1rem;
+  border-radius: 5px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background 0.18s;
+}
+.notes-create-btn:hover {
+  background: #ffd65b;
 }
 
-.theme-toggle:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  opacity: 0.9;
+/* --------------------
+   NOTES LIST/GRID
+-------------------- */
+.notes-page {
+  padding: 1.6rem 1.5rem 1.3rem 1.5rem;
+  max-width: 940px;
+  margin: 0 auto;
+}
+.notes-list-container { width: 100%; }
+.notes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 22px;
+  margin-top: 12px;
+}
+.note-card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  min-width: 267px;
+  max-width: 350px;
+  width: 100%;
+  margin: 0;
+  box-shadow: 0 2px 10px 0 rgb(32 50 96 / 7%);
+  padding: 1.1rem 1.2rem 0.85rem 1.1rem;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.19s;
+  position: relative;
+}
+.note-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.note-card-actions {
+  display: flex;
+  gap: 7px;
+}
+.note-edit-btn, .note-delete-btn {
+  background: none;
+  border: none;
+  font-size: 1.12rem;
+  cursor: pointer;
+  color: var(--secondary);
+  transition: color 0.15s;
+}
+.note-edit-btn:hover { color: var(--primary);}
+.note-delete-btn:hover { color: red;}
+.note-card-content {
+  margin-top: 0.4rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  white-space: pre-line;
+}
+.note-card-tags {
+  display: flex;
+  gap: 2px;
+  margin-top: 0.6rem;
+}
+.note-tag {
+  background: var(--primary);
+  color: #fff;
+  border-radius: 3px;
+  padding: 2.2px 7.2px;
+  font-size: 0.91rem;
+  margin-right: 4px;
 }
 
-.theme-toggle:active {
-  transform: translateY(0);
+/* Empty state */
+.notes-empty {
+  color: #aaa;
+  margin: 1.2rem 0;
+  text-align: center;
+  font-size: 1.2rem;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Loader */
+.centered-loader, .loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 120px;
+}
+.loader, .loading-spinner:after {
+  content: ' ';
+  display: block;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 6px solid var(--primary);
+  border-color: var(--primary) transparent var(--accent) transparent;
+  animation: spin 1.1s linear infinite;
+  margin: auto;
+}
+@keyframes spin {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+
+/* --------------------
+   MODAL DIALOG
+-------------------- */
+.modal-backdrop {
+  position: fixed;
+  top: 0; left: 0;
+  right: 0; bottom: 0;
+  background: rgba(50,60,90,0.18);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-dialog {
+  background: var(--modal-bg);
+  color: var(--text-primary);
+  border-radius: 8px;
+  box-shadow: 0 7px 28px rgba(33,64,120,0.12);
+  padding: 2rem 2.3rem 1.6rem 2.3rem;
+  min-width: 280px;
+  max-width: 97vw;
+  position: relative;
+}
+.modal-dialog h2 {margin-top: 0;}
+.modal-dialog input, .modal-dialog textarea {
+  width: 100%;
+  font-size: 1rem;
+  padding: 0.42rem 0.5rem;
+  border-radius: 5px;
+  border: 1px solid var(--border-color);
+  margin-bottom: 1.03rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  min-width: 0; resize: none;
+}
+.modal-dialog textarea { min-height: 124px;}
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 11px;
+}
+.modal-close-btn, .modal-submit-btn {
+  border-radius: 5px;
+  border: none;
+  padding: 0.49rem 1.2rem;
+  font-size: 1.03rem;
+  cursor: pointer;
+  font-weight: 600;
+  margin-top: 0.5rem;
+  transition: background 0.18s;
+}
+.modal-close-btn { background: #ddd; color: #333;}
+.modal-submi-btn, .modal-submit-btn {
+  background: var(--primary);
+  color: #fff;
+}
+.modal-submit-btn:hover { background: #4684e8;}
+
+/* --------------------
+   AUTH PAGE
+-------------------- */
+.auth-page {
+  max-width: 350px;
+  margin: 7vh auto;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: 9px;
+  padding: 2.2rem 2.2rem 1.7rem 2.2rem;
+  box-shadow: 0 2px 14px rgba(72,99,191,0.09);
+}
+.auth-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1.28rem;
+}
+.auth-form input[type="text"],
+.auth-form input[type="password"] {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+  margin-top: 3px;
+  background: var(--bg-secondary);
+}
+.auth-btn {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  font-size: 1.08rem;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 0.2rem;
+  margin-bottom: 0.7rem;
+  transition: background 0.19s;
+}
+.auth-btn:hover { background: #4684e8;}
+.auth-error {
+  color: #d01e30;
+  font-size: 0.97rem;
+  margin-bottom: 0.6rem;
+  margin-top: -0.7rem;
+}
+.auth-form p {
+  text-align: right;
+  font-size: 0.97rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+.auth-form a { color: var(--accent); }
+
+@media (max-width: 600px) {
+  .auth-page {
+    padding: 1.5rem 0.5rem;
   }
-  to {
-    transform: rotate(360deg);
-  }
+  .modal-dialog { padding: 1.1rem 0.5rem;}
 }
 
-/* Responsive design for mobile */
-@media (max-width: 768px) {
-  .theme-toggle {
-    top: 10px;
-    right: 10px;
-    padding: 8px 16px;
-    font-size: 12px;
-  }
-}
+/* --------------------
+   MISC
+-------------------- */
+* { box-sizing: border-box;}
+input, textarea, button { font-family: inherit;}
+button:focus { outline: 2px solid var(--primary);}
